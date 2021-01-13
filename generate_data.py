@@ -25,7 +25,6 @@ def __generate_data(image_names):
             image = cv2.resize(image, (image_size, image_size), interpolation=cv2.INTER_AREA)
             for x in range(0, image_duplicate):
                 modified_image = modify(image)
-                # modified_image = image
                 image_data = ImageData(image, modified_image, True)
                 image_datas.append(image_data)
 
