@@ -1,14 +1,35 @@
 import random
-
+import cv2
 import numpy as np
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Input, Conv2D, MaxPool2D, Dropout, Dense, Flatten, concatenate, LeakyReLU
-from tensorflow.keras.models import Model
+from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.optimizers import SGD
 
 from data_storage import read_files, ImageData
 
 input_shape = (64, 64, 3)
+model_name = "my_model"
+
+
+def predict(first_img_path, second_img_path):
+    first_img = __prepare_image_before_predict(first_img_path)
+    second_img = __prepare_image_before_predict(second_img_path)
+
+    model = load_model(model_name)
+    prediction = model.predict(x=[first_img, second_img])
+    print(prediction)
+
+
+def __prepare_image_before_predict(image_path):
+    imgs = []
+    img = cv2.imread(image_path)
+    if type(img) is np.ndarray:
+        img = cv2.resize(img, (64, 64), interpolation=cv2.INTER_AREA)
+        img = img / 255.0
+        imgs.append(img)
+
+    return np.array(imgs)
 
 
 def create_model():
@@ -46,7 +67,7 @@ def create_model():
 
     model.evaluate([x_test_first_img, x_test_second_img], y_test, verbose=1)
 
-    model.save("my_model")
+    model.save(model_name)
 
 
 def __create_input_layers(input_img):
@@ -86,5 +107,3 @@ def __split_to_task_and_result(data):
         y.append(item.get_result())
 
     return np.array(x_first), np.array(x_second), np.array(y)
-
-create_model()

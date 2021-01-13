@@ -50,6 +50,3 @@ def create_data():
     test_data = __generate_data(test_images)
 
     data_storage.save_files(training_data, test_data)
-
-
-create_data()
